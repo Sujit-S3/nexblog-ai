@@ -38,7 +38,7 @@ export function validateEnv() {
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error('❌ [EnvValidator] Fatal Environment Validation Errors:');
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         console.error(`   - ${err.path.join('.')}: ${err.message}`);
       });
       if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'testing') {

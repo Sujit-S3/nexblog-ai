@@ -23,9 +23,8 @@ jobs:
       - name: Install Dependencies
         run: npm ci --prefix api && npm ci --prefix client
 
-      - name: Verify Architectural Fitness & Formatting
-        run: |
-          npm --prefix api run lint || echo "Linting verification passed"
+      - name: Lint Frontend (ESLint, zero warnings allowed)
+        run: npm --prefix client run lint
 
   test-suite:
     name: 2. Automated & Architectural Fitness Testing Suite
@@ -56,13 +55,16 @@ jobs:
         run: npm ci --prefix api
 
       - name: Run Architectural Fitness Tests (Hexagonal Boundaries)
-        run: npx jest api/__tests__/architecture/fitness.test.js --passWithNoTests
+        working-directory: api
+        run: node --experimental-vm-modules node_modules/jest/bin/jest.js __tests__/architecture/fitness.test.js --passWithNoTests
 
       - name: Run Unit Tests (Orchestrator, Retrieval, Queue, Evaluation)
-        run: npx jest api/__tests__/unit/ --passWithNoTests
+        working-directory: api
+        run: node --experimental-vm-modules node_modules/jest/bin/jest.js __tests__/unit/ --passWithNoTests
 
       - name: Run Integration Tests
-        run: npx jest api/__tests__/integration/ --passWithNoTests
+        working-directory: api
+        run: node --experimental-vm-modules node_modules/jest/bin/jest.js __tests__/integration/ --passWithNoTests
 
   build:
     name: 3. Production Frontend & Backend Bundle Build

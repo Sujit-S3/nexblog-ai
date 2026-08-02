@@ -18,7 +18,7 @@ export function globalErrorHandler(err, req, res, next) {
     code = 'VALIDATION_ERROR';
     message = 'Request validation failed.';
     details = {
-      issues: err.errors ? err.errors.map((issue) => ({
+      issues: err.issues ? err.issues.map((issue) => ({
         path: issue.path.join('.'),
         message: issue.message,
       })) : [],
