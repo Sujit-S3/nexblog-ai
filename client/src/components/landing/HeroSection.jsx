@@ -197,6 +197,28 @@ export default function HeroSection() {
   };
 
   const [_splineLoaded, setSplineLoaded] = useState(false);
+  const [shouldLoadSpline, setShouldLoadSpline] = useState(false);
+  const splineContainerRef = useRef(null);
+
+  // Defer fetching the ~4.6MB Spline 3D scene chunk until its container is
+  // about to scroll into view, and skip it entirely for prefers-reduced-motion
+  // so hero text/CTAs aren't competing with it for bandwidth on first paint.
+  useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const node = splineContainerRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoadSpline(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section className="relative min-h-screen pt-24 pb-20 flex flex-col justify-center overflow-hidden bg-surface dark:bg-surface-dark">
@@ -341,24 +363,33 @@ export default function HeroSection() {
             {/* Background Spline or Interactive Device Frame */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
               {/* Left Column: Spline 3D Scene / Visual Preview */}
-              <div className="lg:col-span-7 relative h-[320px] sm:h-[400px] rounded-2xl overflow-hidden bg-slate-950/80 border border-slate-800 flex items-center justify-center group">
-                <Suspense
-                  fallback={
-                    <div className="flex flex-col items-center justify-center p-8 text-center">
-                      <div className="w-16 h-16 gradient-brand rounded-3xl flex items-center justify-center mb-4 animate-bounce">
-                        <HiSparkles className="w-8 h-8 text-white" />
+              <div ref={splineContainerRef} className="lg:col-span-7 relative h-[320px] sm:h-[400px] rounded-2xl overflow-hidden bg-slate-950/80 border border-slate-800 flex items-center justify-center group">
+                {shouldLoadSpline ? (
+                  <Suspense
+                    fallback={
+                      <div className="flex flex-col items-center justify-center p-8 text-center">
+                        <div className="w-16 h-16 gradient-brand rounded-3xl flex items-center justify-center mb-4 animate-bounce">
+                          <HiSparkles className="w-8 h-8 text-white" />
+                        </div>
+                        <p className="text-sm font-bold text-slate-300">Rendering 3D Isometric Core…</p>
                       </div>
-                      <p className="text-sm font-bold text-slate-300">Rendering 3D Isometric Core…</p>
+                    }
+                  >
+                    {/* Public interactive Spline 3D Scene */}
+                    <Spline
+                      scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
+                      onLoad={() => setSplineLoaded(true)}
+                      className="w-full h-full object-cover"
+                    />
+                  </Suspense>
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-8 text-center">
+                    <div className="w-16 h-16 gradient-brand rounded-3xl flex items-center justify-center mb-4">
+                      <HiSparkles className="w-8 h-8 text-white" />
                     </div>
-                  }
-                >
-                  {/* Public interactive Spline 3D Scene */}
-                  <Spline
-                    scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
-                    onLoad={() => setSplineLoaded(true)}
-                    className="w-full h-full object-cover"
-                  />
-                </Suspense>
+                    <p className="text-sm font-bold text-slate-300">Interactive 3D Core</p>
+                  </div>
+                )}
 
                 {/* Overlay Instruction */}
                 <div className="absolute bottom-4 right-4 px-3.5 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 text-[11px] font-semibold text-slate-300 flex items-center gap-2 pointer-events-none">

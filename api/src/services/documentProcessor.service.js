@@ -66,7 +66,8 @@ export const documentProcessor = {
     return rawText
       .replace(/\r\n/g, '\n')
       .replace(/\t/g, ' ')
-      .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '') // Strip ASCII control characters
+      // eslint-disable-next-line no-control-regex -- intentional: strip control bytes left over from PDF/DOCX extraction
+      .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
       .replace(/\n{3,}/g, '\n\n') // Collapse excessive breaks
       .replace(/ {2,}/g, ' ') // Collapse multiple spaces
       .trim();

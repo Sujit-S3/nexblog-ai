@@ -54,7 +54,7 @@ class RetentionService {
     }
     this.intervalHandle = setInterval(() => {
       this.runCleanup();
-    }, intervalMs);
+    }, intervalHours * 60 * 60 * 1000);
     if (this.intervalHandle && typeof this.intervalHandle.unref === 'function') {
       this.intervalHandle.unref();
     }

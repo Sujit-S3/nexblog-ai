@@ -20,8 +20,10 @@ git checkout "$TARGET_TAG" || {
   exit 1
 }
 
-echo "2. Restoring clean package dependencies..."
-npm ci --silent || npm install --silent
+echo "2. Restoring clean package dependencies (api + client)..."
+npm ci --silent --prefix api || npm install --silent --prefix api
+npm ci --silent --prefix client || npm install --silent --prefix client
+npm run build --silent --prefix client
 
 echo "3. Re-verifying core environment and database connection state..."
 export NODE_ENV=production

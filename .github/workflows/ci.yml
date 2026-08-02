@@ -26,6 +26,9 @@ jobs:
       - name: Lint Frontend (ESLint, zero warnings allowed)
         run: npm --prefix client run lint
 
+      - name: Lint Backend (ESLint, errors block CI; warnings are a tracked backlog)
+        run: npm --prefix api run lint
+
   test-suite:
     name: 2. Automated & Architectural Fitness Testing Suite
     needs: lint-and-validate
@@ -94,5 +97,22 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Run NPM Security Audit
-        run: npm audit --audit-level=high || echo "No critical vulnerabilities identified"
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --prefix api && npm ci --prefix client
+
+      # Gated at "critical" — both packages are clean at that level today (api: 0
+      # findings of any severity; client: 0 critical, 2 known high). The 2 remaining
+      # client highs (react-router-dom open-redirect, vite path-traversal) only have
+      # fixes via a major version bump (react-router 7.x, vite 8.x) — real migrations,
+      # not safe patches, tracked as a separate follow-up rather than blocking here.
+      - name: Audit API dependencies (fails on critical)
+        run: npm audit --prefix api --audit-level=critical
+
+      - name: Audit client dependencies (fails on critical)
+        run: npm audit --prefix client --audit-level=critical
