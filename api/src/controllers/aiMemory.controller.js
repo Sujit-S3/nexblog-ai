@@ -5,6 +5,9 @@ export const getMemory = async (req, res, next) => {
   try {
     const { userId } = req.params;
     if (!userId) return next(errorHandler(400, 'User ID is required'));
+    if (req.user.id !== userId && !req.user.isAdmin) {
+      return next(errorHandler(403, 'You can only view your own AI memory profile'));
+    }
 
     let memory = await AiMemory.findOne({ userId });
     if (!memory) {

@@ -59,7 +59,8 @@ export const signin = async (req, res, next) => {
     }
     const token = jwt.sign(
       { id: validUser._id, isAdmin: validUser.isAdmin },
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
     );
 
     const { password: pass, ...rest } = validUser._doc;
@@ -67,6 +68,7 @@ export const signin = async (req, res, next) => {
     // Cookie options for cross-site requests
     const cookieOptions = {
       httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days, matches JWT expiresIn
     };
 
     // In production, set sameSite and secure for cross-site cookies
@@ -88,13 +90,15 @@ export const google = async (req, res, next) => {
     if (user) {
       const token = jwt.sign(
         { id: user._id, isAdmin: user.isAdmin },
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
       );
       const { password, ...rest } = user._doc;
 
       // Cookie options for cross-site requests
       const cookieOptions = {
         httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days, matches JWT expiresIn
       };
 
       // In production, set sameSite and secure for cross-site cookies
@@ -120,13 +124,15 @@ export const google = async (req, res, next) => {
       await newUser.save();
       const token = jwt.sign(
         { id: newUser._id, isAdmin: newUser.isAdmin },
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
       );
       const { password, ...rest } = newUser._doc;
 
       // Cookie options for cross-site requests
       const cookieOptions = {
         httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days, matches JWT expiresIn
       };
 
       // In production, set sameSite and secure for cross-site cookies
