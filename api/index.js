@@ -172,7 +172,7 @@ app.use('/api/ai', connectMiddleware, (req, res, next) => {
 // 7. Standardized Global Error Handler Middleware
 app.use(globalErrorHandler);
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'testing') {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
