@@ -5,7 +5,6 @@ import { sendSuccess, sendError } from '../../utils/response.envelope.js';
 import * as aiController from '../../controllers/ai.controller.js';
 import queueManager from '../../services/queue/QueueManager.js';
 import KnowledgeDocument from '../../models/knowledgeDocument.model.js';
-import KnowledgeChunk from '../../models/knowledgeChunk.model.js';
 
 const router = express.Router();
 router.use(verifyToken);
@@ -84,16 +83,7 @@ router.get('/documents', wrapController(aiController.listKnowledge));
  *   delete:
  *     summary: Delete a knowledge document and its associated vector chunks
  */
-router.delete('/documents/:documentId', async (req, res, next) => {
-  try {
-    const { documentId } = req.params;
-    await KnowledgeChunk.deleteMany({ documentId });
-    await KnowledgeDocument.findByIdAndDelete(documentId);
-    return sendSuccess(res, { deleted: true, documentId });
-  } catch (error) {
-    next(error);
-  }
-});
+router.delete('/documents/:documentId', wrapController(aiController.deleteKnowledge));
 
 /**
  * @openapi

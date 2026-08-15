@@ -480,7 +480,12 @@ export const deleteKnowledge = async (req, res, next) => {
     const userId = req.user?.id || 'anonymous';
     const result = await ingestionPipeline.deleteDocument({ documentId, userId });
     return res.status(200).json(result);
-  } catch (error) { next(error); }
+  } catch (error) {
+    if (error.message === 'Document not found or unauthorized.') {
+      return next(errorHandler(404, error.message));
+    }
+    next(error);
+  }
 };
 
 export const verifyContent = async (req, res, next) => {
@@ -598,6 +603,9 @@ export const getAiLogById = async (req, res, next) => {
     const { logId } = req.params;
     const log = await AiLog.findById(logId).lean();
     if (!log) return next(errorHandler(404, 'AiLog entry not found'));
+    if (!req.user.isAdmin && req.user.id !== log.userId) {
+      return next(errorHandler(403, 'You are not allowed to view this log entry'));
+    }
     return res.status(200).json({ success: true, log });
   } catch (error) { next(error); }
 };
@@ -607,6 +615,12 @@ export const replayAiLog = async (req, res, next) => {
     const { logId } = req.params;
     const { overrideProvider, overrideModel } = req.body;
     const userId = req.user?.id || 'anonymous';
+
+    const originalLog = await AiLog.findById(logId).lean();
+    if (!originalLog) return next(errorHandler(404, 'AiLog entry not found'));
+    if (!req.user.isAdmin && userId !== originalLog.userId) {
+      return next(errorHandler(403, 'You are not allowed to replay this log entry'));
+    }
 
     const replayResult = await aiOrchestrator.replayLog({
       logId,
@@ -624,6 +638,12 @@ export const regressionTestAiLog = async (req, res, next) => {
     const { logId } = req.params;
     const { overrideProvider, overrideModel } = req.body;
     const userId = req.user?.id || 'anonymous';
+
+    const originalLog = await AiLog.findById(logId).lean();
+    if (!originalLog) return next(errorHandler(404, 'AiLog entry not found'));
+    if (!req.user.isAdmin && userId !== originalLog.userId) {
+      return next(errorHandler(403, 'You are not allowed to regression-test this log entry'));
+    }
 
     const replayResult = await aiOrchestrator.replayLog({
       logId,
