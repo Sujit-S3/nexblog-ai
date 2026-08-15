@@ -44,6 +44,13 @@ app.use(observabilityMiddleware);
 app.use(generalLimiter);
 
 // CORS configuration
+// ALLOWED_ORIGINS lets each deployment add its production frontend domain
+// without a code change (comma-separated, e.g. "https://myblog.com,https://www.myblog.com").
+const extraOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
@@ -51,6 +58,7 @@ const allowedOrigins = [
   'http://127.0.0.1:3000',
   'https://blog.100jsprojects.com',
   'https://mern-blog-client-steel.vercel.app',
+  ...extraOrigins,
 ];
 
 app.use(
