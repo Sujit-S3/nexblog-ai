@@ -1,13 +1,22 @@
 # NexBlog AI
 
-AI-powered content platform with RAG, multi-agent workflows, and a full-stack publishing system.
+**Computer Science & Systems Engineering Student | Full-Stack & AI Developer**
 
-## Overview
+## 1. What the project is
+NexBlog AI is a full-stack content management and knowledge platform built on the MERN stack. It integrates Retrieval-Augmented Generation (RAG) and multi-agent AI workflows, bridging the gap between traditional blogging and intelligent content generation.
 
-NexBlog AI is a full-stack content management and knowledge platform that integrates Retrieval-Augmented Generation (RAG) and multi-agent AI workflows with a standard MERN blogging architecture. It enables document ingestion, AI-assisted content generation, and interactive knowledge queries on top of a solid publishing backbone.
+## 2. What problem it solves
+Modern content creators spend significant time researching, drafting, and organizing information. NexBlog AI solves this by allowing users to ingest documents (PDFs, DOCX) directly into a knowledge base and use multi-agent AI workflows to autonomously draft, summarize, and evaluate content grounded in those specific documents, streamlining the entire publishing pipeline.
 
-## Key Features
+## 3. What I personally built
+I developed this platform from scratch, focusing on:
+- A responsive React SPA for content consumption and creation.
+- A Node.js/Express backend that handles standard blog CRUD operations alongside complex AI tasks.
+- A document ingestion pipeline for RAG, enabling AI responses grounded in user-uploaded knowledge.
+- Configurable multi-agent AI workflows that support Gemini, OpenAI, and Anthropic APIs dynamically via environment configurations.
+- An AI evaluation replay engine for testing prompt quality against historical user queries.
 
+## 4. Main features
 - **RAG Knowledge Base:** Ingest PDFs, DOCX, and web content; query with AI-grounded responses.
 - **Multi-Agent AI Workflows:** Chained AI tasks for content generation, summarization, and evaluation.
 - **AI Evaluation Pipeline:** Replay engine for testing AI response quality against historical queries.
@@ -15,8 +24,7 @@ NexBlog AI is a full-stack content management and knowledge platform that integr
 - **Configurable AI Providers:** Supports Gemini, OpenAI, and Anthropic via environment variables.
 - **Rate Limiting & Security:** Helmet, express-rate-limit, CORS allowlist configurable via `ALLOWED_ORIGINS`.
 
-## Architecture
-
+## 5. Architecture
 ```mermaid
 graph TD
     Client[React SPA] -->|REST| API[Node.js / Express API]
@@ -25,113 +33,58 @@ graph TD
     API --> KnowledgeBase[Document Store]
 ```
 
-## Tech Stack
-
-### Frontend (`client/`)
-- **Framework:** React + Vite
-- **State / Data:** Context API
-
-### Backend (`api/`)
-- **Server:** Node.js, Express (ESM)
+## 6. Technology stack
+- **Frontend (`client/`):** React, Vite, Context API
+- **Backend (`api/`):** Node.js, Express (ESM), Zod
 - **Database:** MongoDB, Mongoose
-- **AI:** Gemini, OpenAI, Anthropic (provider-agnostic)
+- **AI Integration:** Gemini, OpenAI, Anthropic (provider-agnostic)
 - **Security:** Helmet, express-rate-limit, bcryptjs, JWT (httpOnly cookies)
-- **Validation:** Zod
-- **Testing:** Jest + Supertest
-- **Queue:** BullMQ (optional)
+- **Testing:** Jest, Supertest
 
-## Project Structure
+## 7. Demo
+*(Add Live Demo link here if available)*
 
-```
-nexblog-ai/
-├── api/           # Node.js / Express Backend
-│   ├── src/       # Route handlers, models, services, AI pipelines
-│   └── __tests__/ # Jest integration tests
-├── client/        # React Frontend SPA
-├── docs/          # Engineering documentation
-└── e2e/           # End-to-end tests
-```
+## 8. Screenshots
+*(Add screenshots of the Blog Interface, AI Agent Workflows, and Knowledge Base ingestion here)*
 
-## Installation
-
-### Prerequisites
-- Node.js (v20+)
-- MongoDB (local or Atlas)
-
-### Clone the Repository
+## 9. Installation
 ```bash
 git clone https://github.com/Sujit-S3/nexblog-ai.git
 cd nexblog-ai
+
+# Install backend dependencies
+cd api
+npm install
+
+# Install frontend dependencies
+cd ../client
+npm install
 ```
 
-## Environment Variables
-
-### Backend (`api/.env`)
+## 10. Environment variables
+**Backend (`api/.env`)**
 ```env
 MONGO=mongodb://127.0.0.1:27017/nexblog
-JWT_SECRET=your_jwt_secret_key_here
+JWT_SECRET=your_jwt_secret_key
 GEMINI_API_KEY=
 OPENAI_API_KEY=
 ANTHROPIC_API_KEY=
 ALLOWED_ORIGINS=http://localhost:5173
 ```
 
-### Frontend (`client/.env`)
+**Frontend (`client/.env`)**
 ```env
-VITE_FIREBASE_API_KEY=your_firebase_api_key_here
+VITE_FIREBASE_API_KEY=your_firebase_api_key
 ```
 
-## Running Locally
-
-1. **Start the Backend:**
-```bash
-cd api
-npm install
-npm run dev
-```
-
-2. **Start the Frontend:**
-```bash
-cd client
-npm install
-npm run dev
-```
-
-Or from the root:
-```bash
-npm run build  # installs all deps + builds frontend
-npm run dev    # starts the API only
-```
-
-## Testing
-
+## 11. Testing
 ```bash
 # API integration tests
-cd api && npm test
+cd api
+npm test
 ```
 
-## Deployment
-
-The project is configured for Vercel deployment.
-
-- **Backend:** Deploy `api/` as a Vercel Serverless Function (`api/vercel.json`).
+## 12. Deployment
+The project is configured for Vercel deployment:
+- **Backend:** Deploy `api/` as a Vercel Serverless Function (`api/vercel.json`). Configure `ALLOWED_ORIGINS` to point to your frontend URL.
 - **Frontend:** Deploy `client/` as a Vercel SPA (`client/vercel.json`).
-- Configure `ALLOWED_ORIGINS` in the backend to your deployed frontend URL.
-
-## Security
-
-- Passwords hashed with `bcryptjs`.
-- JWTs in `httpOnly` cookies.
-- CORS restricted via configurable `ALLOWED_ORIGINS`.
-- `helmet` for secure HTTP headers.
-- Rate limiting on all API routes.
-
-## Future Improvements
-
-- Add vector database (e.g., Qdrant or Pinecone) for more scalable RAG.
-- Introduce a streaming AI response interface.
-- Add a dedicated admin panel for knowledge base management.
-
-## License
-
-MIT License
